@@ -3,9 +3,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Dados da mensagem
     $resumo = $_POST["resumo"];
     $detalhes = $_POST["detalhes"];
+    
+    // Calcular o total
+    $linhas = explode("\n", $detalhes);
+    $total = 0;
+    foreach($linhas as $linha) {
+        $info = explode(" - ", $linha);
+        if(count($info) > 1) {
+            $valor = str_replace("R$ ", "", $info[1]);
+            $total += floatval($valor);
+        }
+    }
+    // Adicionar o total à mensagem
+    $mensagem = "*$resumo*\n\n$detalhes\n\n*TOTAL R$ $total*";
 
     // URL DA EvolutionAPI
-    $apiUrl = 'http://{{baseURL}}/message/sendText/{{instance}}'; // Substituir "{{baseURL}}" e "{{instance}}" pelas suas informações reais
+    $apiUrl = 'http://{{baseURL}}/message/sendText/{{instance}}'; // Substitua "{{baseURL}}" e "{{instance}}" pelas suas informações reais
 
     // Dados para enviar via WhatsApp
     $data = array(
@@ -16,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "linkPreview" => false
         ),
         "textMessage" => array(
-            "text" => "$resumo\n\n$detalhes"
+            "text" => $mensagem
         )
     );
 
@@ -30,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json',
-        'apikey: digite-seu-token' // Substitua "digite-seu-token" pelo seu token real
+        'apikey: digite-seu-token' // Substituir "digite-seu-token" pelo seu token real
     ));
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -47,5 +60,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Fecha o cURL
     curl_close($ch);
+
+    // Redireciona de volta para a página index.php
+    header("Location: index.php");
+    exit();
 }
 ?>
