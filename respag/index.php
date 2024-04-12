@@ -2,6 +2,7 @@
 // INCLUE FUNCOES DE ADDONS -----------------------------------------------------------------------
 include('addons.class.php');
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR" class="has-navbar-fixed-top">
 <head>
@@ -46,24 +47,33 @@ if(isset($_POST["datapag"])){
     $query = "SELECT datavenc, valorpag, coletor, formapag, login FROM sis_lanc WHERE datapag = '$datapag'";
     $result = mysqli_query($con, $query);
     
-    // Se houver resultados, exiba o resumo
+    // Se houver resultados, exibir o resumo
     if(mysqli_num_rows($result) > 0) {
-      echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
-      $total = 0;
-      while($row = mysqli_fetch_assoc($result)) {
-        // Formatação da data de pagamento
-        $datapag_formatted = date('d/m/Y', strtotime($row['datapag']));
-        $datavenc_formatted = date('d/m/Y', strtotime($row['datavenc']));
-        
-        // Exiba os detalhes de cada pagamento
-        echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - $datavenc_formatted - {$row['coletor']}</p>";
-        $total += $row['valorpag'];
-      }
-      // Exiba o total dos pagamentos em negrito
-      echo "<p>----------------------------------------------------------------</p>";
-      echo "<p><strong>TOTAL - R$ $total</strong></p>";
+        echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
+        $total = 0;
+        while($row = mysqli_fetch_assoc($result)) {
+            // Exibir os detalhes de cada pagamento
+            echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}</p>";
+            $total += $row['valorpag'];
+        }
+        // Exibir o total dos pagamentos em negrito
+        echo "<p>----------------------------------------------------------------</p>";
+        echo "<p><strong>TOTAL - R$ $total</strong></p>";
+
+        // Botão para enviar via WhatsApp
+        echo "<form method='post' action='enviar_whatsapp.php'>";
+        echo "<input type='hidden' name='resumo' value='Resumo dos pagamentos do dia $datapag'>";
+        echo "<input type='hidden' name='detalhes' value='Detalhes dos pagamentos:\n";
+        mysqli_data_seek($result, 0); // Volta o ponteiro do resultado para o início
+        while($row = mysqli_fetch_assoc($result)) {
+            echo "{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}\n";
+        }
+        echo "TOTAL - R$ $total'>";
+        echo "<button type='submit'>Enviar via WhatsApp</button>";
+        echo "</form>";
     } else {
-      echo "<p>Nenhum pagamento encontrado para a data $datapag.</p>";
+        echo "<p><strong>Nenhum pagamento encontrado para a data " . date('d/m/Y', strtotime($datapag)) . ".</strong></p>";
+
     }
   }
 }
