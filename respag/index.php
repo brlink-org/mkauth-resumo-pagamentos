@@ -48,16 +48,20 @@ if(isset($_POST["datapag"])){
     
     // Se houver resultados, exiba o resumo
     if(mysqli_num_rows($result) > 0) {
-      echo "<h2>Resumo dos pagamentos do dia $datapag</h2>";
+      echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
       $total = 0;
       while($row = mysqli_fetch_assoc($result)) {
+        // Formatação da data de pagamento
+        $datapag_formatted = date('d/m/Y', strtotime($row['datapag']));
+        $datavenc_formatted = date('d/m/Y', strtotime($row['datavenc']));
+        
         // Exiba os detalhes de cada pagamento
-        echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - {$row['datavenc']} - {$row['coletor']}</p>";
+        echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - $datavenc_formatted - {$row['coletor']}</p>";
         $total += $row['valorpag'];
       }
-      // Exiba o total dos pagamentos
+      // Exiba o total dos pagamentos em negrito
       echo "<p>----------------------------------------------------------------</p>";
-      echo "<p>TOTAL - R$ $total</p>";
+      echo "<p><strong>TOTAL - R$ $total</strong></p>";
     } else {
       echo "<p>Nenhum pagamento encontrado para a data $datapag.</p>";
     }
