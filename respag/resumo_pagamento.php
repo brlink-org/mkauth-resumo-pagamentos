@@ -45,14 +45,14 @@ if (isset($_POST["datapag"])) {
 
     if (mysqli_num_rows($result) > 0) {
         // Monta o cabeçalho do resumo
-        $mensagem = "==================================\n";
+        $mensagem = "===============================\n";
         $mensagem .= "*Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "*\n";
-        $mensagem .= "==================================\n\n";
+        $mensagem .= "===============================\n\n";
 
         // Exibe o cabeçalho no HTML com negrito
-        echo "<p><strong>==================================</strong></p>";
+        echo "<p><strong>===============================</strong></p>";
         echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
-        echo "<p><strong>==================================</strong></p>";
+        echo "<p><strong>===============================</strong></p>";
 
         // Inicializa variáveis para agrupamento e totalização
         $formas_pagamento = [];
@@ -92,18 +92,18 @@ if (isset($_POST["datapag"])) {
                 echo "<p>{$row['login']} - R$ " . number_format($row['valorpag'], 2, ',', '.') . " - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}</p>";
             }
 
-            $mensagem .= "==================================\n\n";
-            echo "<p><strong>==================================</strong></p>"; // Exibição no HTML
+            $mensagem .= "===============================\n\n";
+            echo "<p><strong>===============================</strong></p>"; // Exibição no HTML
         }
 
         // Adiciona o total geral ao final
         $total_geral = number_format(array_sum($totais), 2, ',', '.');
         $mensagem .= "*TOTAL GERAL R$ $total_geral*\n";
-        $mensagem .= "==================================\n";
+        $mensagem .= "===============================\n";
 
         // Exibe no HTML
         echo "<h3><strong>TOTAL GERAL R$ $total_geral</strong></h3>";
-        echo "<p><strong>==================================</strong></p>";
+        echo "<p><strong>===============================</strong></p>";
 
         // Envia o formulário com a mensagem
         echo "<form method='post' action='enviar_whatsapp.php'>";
