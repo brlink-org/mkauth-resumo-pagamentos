@@ -20,6 +20,17 @@ if ($mysqli->connect_errno) {
 }
 
 // ------------------------------------------------------------------------------------------------
+// Formulário de entrada da data
+// ------------------------------------------------------------------------------------------------
+?>
+<form name="pagamentos" method="post">
+    <label for="datapag">Selecione a data para consultar os pagamentos:</label>
+    <input type="date" name="datapag" id="datapag" required>
+    <button type="submit">Consultar pagamentos</button>
+</form>
+
+<?php
+// ------------------------------------------------------------------------------------------------
 // Processa o formulário de consulta de pagamentos
 // ------------------------------------------------------------------------------------------------
 if (isset($_POST["datapag"])) {
