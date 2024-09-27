@@ -1,82 +1,33 @@
 <?php
-// INCLUE FUNCOES DE ADDONS -----------------------------------------------------------------------
+// INCLUI FUNÇÕES DE ADDONS -----------------------------------------------------------------------
+// Este script inclui o arquivo 'addons.class.php', que contém funções ou classes auxiliares.
 include('addons.class.php');
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR" class="has-navbar-fixed-top">
+<html lang="pt-BR" class="has-navbar-fixed-top"> <!-- Define o idioma como português BR -->
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta charset="iso-8859-1">
-<title>MK - AUTH :: Pagamentos</title>
+    <!-- Define visualização para dispositivos móveis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Define o charset como ISO-8859-1 -->
+    <meta charset="iso-8859-1">
+    <!-- Define o título da página, usando o nome do addon no Manifest -->
+    <title>MK - AUTH :: <?php echo $Manifest->{'name'}; ?></title> 
 
-<link href="../../estilos/mk-auth.css" rel="stylesheet" type="text/css" />
-<link href="../../estilos/font-awesome.css" rel="stylesheet" type="text/css" />
+    <!-- Inclui arquivos de estilo -->
+    <link href="../../estilos/mk-auth.css" rel="stylesheet" type="text/css" /> 
+    <link href="../../estilos/font-awesome.css" rel="stylesheet" type="text/css" /> 
 
-<script src="../../scripts/jquery.js"></script>
-<script src="../../scripts/mk-auth.js"></script>
-
+    <!-- Inclui bibliotecas JavaScript -->
+    <script src="../../scripts/jquery.js"></script> 
+    <script src="../../scripts/mk-auth.js"></script> 
 </head>
 <body>
+    <!-- Inclui o cabeçalho e o conteúdo principal -->
+    <?php include('../../topo.php'); ?> <!-- Inclui o cabeçalho -->
+    <?php include('resumo_pagamento.php'); ?> <!-- Inclui o arquivo principal de resumo -->
+    <?php include('../../baixo.php'); ?> <!-- Inclui o rodapé -->
 
-<?php include('../../topo.php'); ?>
-
-<!-- Formulário para entrada da data -->
-<form name="pagamentos" method="post">
-  <input type="date" name="datapag" id="datapag" required>
-  <button type="submit">Consultar pagamentos</button>
-</form>
-
-<?php
-if(isset($_POST["datapag"])){
-  $datapag = $_POST["datapag"];
-
-  // Conexão com o banco de dados do Mk-Auth
-  $host = "localhost";
-  $usuario = "root";
-  $senha = "vertrigo";
-  $db = "mkradius";
-  $mysqli = new mysqli($host, $usuario, $senha, $db);
-  if($mysqli->connect_errno) {
-    echo "Falha na conexao: (".$mysqli->connect_errno.") ".$mysqli->connect_error;
-  } else {
-    $con = mysqli_connect("$host","$usuario","$senha");
-    mysqli_select_db($con,"$db");
-
-    // Consulta SQL para obter os pagamentos na data especificada
-    $query = "SELECT datavenc, valorpag, coletor, formapag, login FROM sis_lanc WHERE datapag = '$datapag'";
-    $result = mysqli_query($con, $query);
-
-    // Se houver resultados, exibir o resumo
-    if(mysqli_num_rows($result) > 0) {
-        $detalhes = ""; // Inicializa a variável detalhes
-        echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
-        $total = 0;
-        while($row = mysqli_fetch_assoc($result)) {
-            // Exibir os detalhes de cada pagamento
-            echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}</p>";
-            $detalhes .= "{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}\n";
-            $total += $row['valorpag'];
-        }
-        // Exibir o total dos pagamentos em negrito
-        echo "<p><strong>----------------------------------------------------------------</strong></p>";
-        echo "<p><strong>TOTAL R$ $total</strong></p>";
-
-        // Botão para enviar via WhatsApp
-        echo "<form method='post' action='enviar_whatsapp.php'>";
-        echo "<input type='hidden' name='resumo' value='Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "'>";
-        echo "<input type='hidden' name='detalhes' value='$detalhes'>";
-        echo "<button type='submit'>Enviar via WhatsApp</button>";
-        echo "</form>";
-    } else {
-        echo "<p><strong>Nenhum pagamento encontrado para a data " . date('d/m/Y', strtotime($datapag)) . ".</strong></p>";
-    }
-  }
-}
-?>
-
-<?php include('../../baixo.php'); ?>
-
-<script src="../../menu.js.hhvm"></script>
-
+    <!-- Inclui scripts relacionados ao menu -->
+    <script src="../../menu.js.hhvm"></script> 
 </body>
 </html>

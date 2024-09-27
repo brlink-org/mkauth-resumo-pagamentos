@@ -1,26 +1,30 @@
 <?php
+// ------------------------------------------------------------------------------------------------
+// Configurações da API WhatsApp
+// ------------------------------------------------------------------------------------------------
+$apiUrl = 'https://{{baseURL}}/message/sendText/{{instance}}'; // URL da API Evolution v2
+$apiToken = 'seu-token-aqui'; // Token de autenticação da API
+
+// ------------------------------------------------------------------------------------------------
+// Envio da mensagem via API
+// ------------------------------------------------------------------------------------------------
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Dados da mensagem
     $resumo = $_POST["resumo"];
     $detalhes = $_POST["detalhes"];
     
-    // Calcular o total
+    // Calcula o total
     $linhas = explode("\n", $detalhes);
     $total = 0;
-    foreach($linhas as $linha) {
+    foreach ($linhas as $linha) {
         $info = explode(" - ", $linha);
-        if(count($info) > 1) {
+        if (count($info) > 1) {
             $valor = str_replace("R$ ", "", $info[1]);
             $total += floatval($valor);
         }
     }
-    // Adicionar o total à mensagem
+    
+    // Prepara a mensagem para envio
     $mensagem = "*$resumo*\n\n$detalhes\n\n*TOTAL R$ $total*";
-
-    // URL DA EvolutionAPI
-    $apiUrl = 'http://{{baseURL}}/message/sendText/{{instance}}'; // Substitua "{{baseURL}}" e "{{instance}}" pelas suas informações reais
-
-    // Dados para enviar via WhatsApp
     $data = array(
         "number" => "numero_destino", // Substituir "numero_destino" pelo número de destino
         "options" => array(
@@ -32,36 +36,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "text" => $mensagem
         )
     );
-
-    // Converte para JSON
+    
     $jsonData = json_encode($data);
 
-    // Inicializa o cURL
+    // Configura cURL para enviar a requisição
     $ch = curl_init($apiUrl);
-
-    // Configurações do cURL
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json',
-        'apikey: digite-seu-token' // Substituir "digite-seu-token" pelo seu token real
+        'apikey: ' . $apiToken
     ));
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
 
-    // Executa o cURL
+    // Executa a requisição
     $response = curl_exec($ch);
-
-    // Verifica erros
     if (curl_errno($ch)) {
         echo 'Erro ao chamar a API: ' . curl_error($ch);
     } else {
         echo 'Mensagem enviada com sucesso!';
     }
-
-    // Fecha o cURL
+    
     curl_close($ch);
 
-    // Redireciona de volta para a página index.php
+    // Redireciona de volta para a página principal
     header("Location: index.php");
     exit();
 }
