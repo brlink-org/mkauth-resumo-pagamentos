@@ -33,9 +33,9 @@ if ($mysqli->connect_errno) {
 if (isset($_POST["datapag"])) {
     // Escapa a data para evitar problemas de injeção e garantir o formato correto
     $datapag = mysqli_real_escape_string($mysqli, $_POST["datapag"]);
-    
-    // Consulta SQL para obter os pagamentos na data especificada
-    $query = "SELECT datavenc, valorpag, coletor, formapag, login FROM sis_lanc WHERE datapag = '$datapag'";
+
+    // Adiciona o operador LIKE para pegar qualquer registro com a data especificada, ignorando o horário
+    $query = "SELECT datavenc, valorpag, coletor, formapag, login FROM sis_lanc WHERE datapag LIKE '$datapag%'"; 
     $result = mysqli_query($mysqli, $query);
 
     if (!$result) {
@@ -47,24 +47,18 @@ if (isset($_POST["datapag"])) {
         $detalhes = ""; // Inicializa a variável detalhes
         echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
         $total = 0;
-        
+
         // Loop pelos resultados e exibe os detalhes
         while ($row = mysqli_fetch_assoc($result)) {
-            // Debug temporário para verificar os dados recebidos da consulta
-            echo "<pre>";
-            print_r($row); // Exibe os dados de cada pagamento como array
-            echo "</pre>";
-
-            // Exibe os detalhes de cada pagamento
             echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}</p>";
             $detalhes .= "{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}\n";
             $total += $row['valorpag'];
         }
-        
+
         // Exibe o total dos pagamentos
         echo "<p><strong>----------------------------------------------------------------</strong></p>";
         echo "<p><strong>TOTAL R$ $total</strong></p>";
-        
+
         // Formulário para enviar via WhatsApp
         echo "<form method='post' action='enviar_whatsapp.php'>";
         echo "<input type='hidden' name='resumo' value='Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "'>";
