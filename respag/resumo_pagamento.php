@@ -31,12 +31,18 @@ if ($mysqli->connect_errno) {
 // Processa o formulário de consulta de pagamentos
 // ------------------------------------------------------------------------------------------------
 if (isset($_POST["datapag"])) {
-    $datapag = $_POST["datapag"];
+    // Escapa a data para evitar problemas de injeção e garantir o formato correto
+    $datapag = mysqli_real_escape_string($mysqli, $_POST["datapag"]);
     
     // Consulta SQL para obter os pagamentos na data especificada
     $query = "SELECT datavenc, valorpag, coletor, formapag, login FROM sis_lanc WHERE datapag = '$datapag'";
     $result = mysqli_query($mysqli, $query);
-    
+
+    if (!$result) {
+        echo "Erro na consulta: " . mysqli_error($mysqli); // Exibe o erro da consulta se ocorrer
+        exit();
+    }
+
     if (mysqli_num_rows($result) > 0) {
         $detalhes = ""; // Inicializa a variável detalhes
         echo "<h2><strong>Resumo dos pagamentos do dia " . date('d/m/Y', strtotime($datapag)) . "</strong></h2>";
