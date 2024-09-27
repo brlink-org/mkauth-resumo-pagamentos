@@ -7,9 +7,6 @@ $usuario = "root"; // Usuário do banco de dados MySQL
 $senha = "vertrigo"; // Senha do banco de dados MySQL
 $db = "mkradius"; // Nome do banco de dados MySQL
 
-$apiUrl = 'https://{{baseURL}}/message/sendText/{{instance}}'; // URL da API Evolution v2
-$apiToken = 'seu-token-aqui'; // Token de autenticação da API
-
 // ------------------------------------------------------------------------------------------------
 // Conexão com o banco de dados
 // ------------------------------------------------------------------------------------------------
