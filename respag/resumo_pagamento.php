@@ -44,6 +44,12 @@ if (isset($_POST["datapag"])) {
         
         // Loop pelos resultados e exibe os detalhes
         while ($row = mysqli_fetch_assoc($result)) {
+            // Debug temporário para verificar os dados recebidos da consulta
+            echo "<pre>";
+            print_r($row); // Exibe os dados de cada pagamento como array
+            echo "</pre>";
+
+            // Exibe os detalhes de cada pagamento
             echo "<p>{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}</p>";
             $detalhes .= "{$row['login']} - R$ {$row['valorpag']} - {$row['formapag']} - " . date('d/m/Y', strtotime($row['datavenc'])) . " - {$row['coletor']}\n";
             $total += $row['valorpag'];
